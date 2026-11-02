@@ -39,13 +39,12 @@
     },
     {
       "Identifier": "staffed",
-      "Type": "CheckStaffing",
-      "Parameters": { "Status": "Available" },
+      "Type": "CheckMetricData",
+      "Parameters": { "MetricType": "NumberOfAgentsAvailable" },
       "Transitions": {
         "NextAction": "nobody",
         "Conditions": [
-          { "NextAction": "to-queue", "Condition": { "Operator": "Equals", "Operands": [ "True" ] } },
-          { "NextAction": "nobody", "Condition": { "Operator": "Equals", "Operands": [ "False" ] } }
+          { "NextAction": "to-queue", "Condition": { "Operator": "NumberGreaterThan", "Operands": [ "0" ] } }
         ],
         "Errors": [ { "NextAction": "nobody", "ErrorType": "NoMatchingError" } ]
       }
