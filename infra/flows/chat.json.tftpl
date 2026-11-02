@@ -54,7 +54,10 @@
         "Conditions": [
           { "NextAction": "to-queue", "Condition": { "Operator": "NumberGreaterThan", "Operands": [ "0" ] } }
         ],
-        "Errors": [ { "NextAction": "nobody", "ErrorType": "NoMatchingError" } ]
+        "Errors": [
+          { "NextAction": "nobody", "ErrorType": "NoMatchingCondition" },
+          { "NextAction": "nobody", "ErrorType": "NoMatchingError" }
+        ]
       }
     },
     {

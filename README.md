@@ -63,9 +63,10 @@ and put `ccp_url`, `assist_url` and the phone number into the site's `src/data/c
 ## Things learned
 
 - The "Check staffing" block is `CheckMetricData` with `MetricType: NumberOfAgentsAvailable` and a
-  `NumberGreaterThan 0` condition in the flow language; there is no `CheckStaffing` action, and the API's
-  `InvalidContactFlowException` comes back with an empty message. Probing one block at a time with
-  `CreateContactFlow` found it in two passes.
+  `NumberGreaterThan 0` condition in the flow language; there is no `CheckStaffing` action. It also
+  **requires both `NoMatchingCondition` and `NoMatchingError` in its `Errors`**, although the reference says
+  `NoMatchingCondition` applies only to the queue metrics. The API's `InvalidContactFlowException` comes back
+  with an empty message, so this was found by probing one block at a time with `CreateContactFlow`.
 - A synchronous Lambda in a flow is capped at 8 seconds, so the suggestion service has to be warm. The Azure
   service it calls scales to zero by default; it now keeps one replica while the demo is up.
 - `UpdateContactRecordingBehavior` with analytics requires both participants recorded; chat analytics is
