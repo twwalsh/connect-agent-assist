@@ -34,7 +34,7 @@ function turnstileToken(): string { const t = (document.querySelector('[name="cf
     lastQuestion = question; lastAnswer = body.answer || "";
     answerEl.innerHTML = renderMd(lastAnswer); answerEl.hidden = false;
     const srcs: { title: string; url: string }[] = body.sources || [];
-    if (srcs.length) { sourcesEl.innerHTML = "Sources: " + srcs.map((s) => `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a>`).join(" · "); sourcesEl.hidden = false; }
+    if (srcs.length) { sourcesEl.innerHTML = "Sources: " + srcs.map((s) => (s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a>` : esc(s.title))).join(" · "); sourcesEl.hidden = false; }
     say(""); escalate.hidden = false;
   } catch { say("The assistant could not answer just now."); }
   finally { try { turnstile.reset(); } catch { /* ignore */ } }

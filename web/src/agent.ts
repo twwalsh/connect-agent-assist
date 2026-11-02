@@ -42,7 +42,7 @@ async function suggest(question: string, label: string) {
     const srcs: { title: string; url: string }[] = body.sources || [];
     card.innerHTML = `<p class="fine">${esc(label)} · ${body.known ? "from the manual" : "the assistant did not know; answer yourself"}</p>` +
       `<div class="prose">${renderMd(body.answer || "")}</div>` +
-      (srcs.length ? `<p class="fine">Sources: ${srcs.map((s) => `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a>`).join(" · ")}</p>` : "") +
+      (srcs.length ? `<p class="fine">Sources: ${srcs.map((s) => (s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a>` : esc(s.title))).join(" · ")}</p>` : "") +
       (body.known ? `<p><button type="button" class="use">Use this reply</button></p>` : "");
     card.querySelector(".use")?.addEventListener("click", () => { replyEl.value = body.answer || ""; replyEl.focus(); });
   } catch (err) { card.innerHTML = `<p class="fine">${esc(label)}</p><p>Assist unavailable: ${esc(String(err).slice(0, 120))}</p>`; }

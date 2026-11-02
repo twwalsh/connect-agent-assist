@@ -30,6 +30,7 @@ resource "aws_connect_instance" "this" {
   inbound_calls_enabled            = true
   outbound_calls_enabled           = true
   contact_lens_enabled             = true
+  contact_flow_logs_enabled        = true
   auto_resolve_best_voices_enabled = true
   early_media_enabled              = true
 }
