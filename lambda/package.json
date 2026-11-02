@@ -1,0 +1,16 @@
+{
+  "name": "connect-agent-assist-lambda",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/assist.ts src/start-chat.ts --bundle --platform=node --target=node22 --format=esm --outdir=dist --out-extension:.js=.mjs --banner:js=\"import { createRequire } from 'module'; const require = createRequire(import.meta.url);\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-connect": "^3.700.0",
+    "@types/aws-lambda": "^8.10.145",
+    "@types/node": "^22.20.5",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.6.0"
+  }
+}

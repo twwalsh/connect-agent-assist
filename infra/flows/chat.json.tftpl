@@ -1,0 +1,86 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "logging-on",
+  "Metadata": { "entryPointPosition": { "x": 20, "y": 20 }, "ActionMetadata": {} },
+  "Actions": [
+    {
+      "Identifier": "logging-on",
+      "Type": "UpdateFlowLoggingBehavior",
+      "Parameters": { "FlowLoggingBehavior": "Enabled" },
+      "Transitions": { "NextAction": "set-queue" }
+    },
+    {
+      "Identifier": "set-queue",
+      "Type": "UpdateContactTargetQueue",
+      "Parameters": { "QueueId": "${queue_arn}" },
+      "Transitions": { "NextAction": "prefetch-assist", "Errors": [ { "NextAction": "sorry", "ErrorType": "NoMatchingError" } ] }
+    },
+    {
+      "Identifier": "prefetch-assist",
+      "Type": "InvokeLambdaFunction",
+      "Parameters": {
+        "LambdaFunctionARN": "${assist_arn}",
+        "InvocationTimeLimitSeconds": "8",
+        "LambdaInvocationAttributes": { "question": "$.Attributes.question", "botAnswer": "$.Attributes.botAnswer" },
+        "ResponseValidation": { "ResponseType": "STRING_MAP" }
+      },
+      "Transitions": { "NextAction": "save-assist", "Errors": [ { "NextAction": "greet", "ErrorType": "NoMatchingError" } ] }
+    },
+    {
+      "Identifier": "save-assist",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": {
+          "assistStatus": "$.External.assistStatus",
+          "assistAnswer": "$.External.assistAnswer",
+          "assistSources": "$.External.assistSources"
+        },
+        "TargetContact": "Current"
+      },
+      "Transitions": { "NextAction": "greet", "Errors": [ { "NextAction": "greet", "ErrorType": "NoMatchingError" } ] }
+    },
+    {
+      "Identifier": "greet",
+      "Type": "MessageParticipant",
+      "Parameters": { "Text": "Thanks. Checking whether someone is available." },
+      "Transitions": { "NextAction": "staffed", "Errors": [ { "NextAction": "staffed", "ErrorType": "NoMatchingError" } ] }
+    },
+    {
+      "Identifier": "staffed",
+      "Type": "CheckStaffing",
+      "Parameters": { "Status": "Available" },
+      "Transitions": {
+        "NextAction": "nobody",
+        "Conditions": [
+          { "NextAction": "to-queue", "Condition": { "Operator": "Equals", "Operands": [ "True" ] } },
+          { "NextAction": "nobody", "Condition": { "Operator": "Equals", "Operands": [ "False" ] } }
+        ],
+        "Errors": [ { "NextAction": "nobody", "ErrorType": "NoMatchingError" } ]
+      }
+    },
+    {
+      "Identifier": "to-queue",
+      "Type": "TransferContactToQueue",
+      "Parameters": {},
+      "Transitions": { "NextAction": "end", "Errors": [ { "NextAction": "sorry", "ErrorType": "QueueAtCapacity" }, { "NextAction": "sorry", "ErrorType": "NoMatchingError" } ] }
+    },
+    {
+      "Identifier": "nobody",
+      "Type": "MessageParticipant",
+      "Parameters": { "Text": "Nobody is at the desk right now. This is a one-person demo, so that happens. Your question and the assistant's answer were recorded; please use the contact form at fruitlessresearch.com for a reply." },
+      "Transitions": { "NextAction": "end", "Errors": [ { "NextAction": "end", "ErrorType": "NoMatchingError" } ] }
+    },
+    {
+      "Identifier": "sorry",
+      "Type": "MessageParticipant",
+      "Parameters": { "Text": "Something went wrong on our side starting this chat. Please try again in a moment." },
+      "Transitions": { "NextAction": "end", "Errors": [ { "NextAction": "end", "ErrorType": "NoMatchingError" } ] }
+    },
+    {
+      "Identifier": "end",
+      "Type": "DisconnectParticipant",
+      "Parameters": {},
+      "Transitions": {}
+    }
+  ]
+}
